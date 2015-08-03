@@ -24,6 +24,7 @@
 package org.opentdc.invitations;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.opentdc.service.exception.DuplicateException;
 import org.opentdc.service.exception.InternalServerErrorException;
@@ -42,6 +43,8 @@ public interface ServiceProvider {
 		int position,
 		int size
 	);
+	
+	public abstract Properties statistics();
 
 	public abstract InvitationModel create(
 		InvitationModel invitation) 
@@ -80,4 +83,7 @@ public interface ServiceProvider {
 			String id,
 			String comment)
 	throws NotFoundException, ValidationException;
+	
+	public abstract void migrate() 
+	throws InternalServerErrorException;
 }

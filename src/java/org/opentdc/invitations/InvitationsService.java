@@ -24,9 +24,11 @@
 package org.opentdc.invitations;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 // import io.swagger.annotations.*;
+
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -87,6 +89,16 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	) {
 		return sp.list(queryType, query, position, size);
 	}
+	
+	/**
+	 * Return statistical information about the service
+	 * @return the statistical information in the form of a list of properties
+	 */
+	@GET
+	@Path("/statistics")
+	public Properties statistics() {
+		return sp.statistics();
+	}
 
 	@POST
 	@Path("/")
@@ -124,6 +136,11 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 		return sp.update(id, invitation);
 	}
 
+	/**
+	 * @param id
+	 * @throws NotFoundException
+	 * @throws InternalServerErrorException
+	 */
 	@DELETE
 	@Path("/{id}")
 	//	@ApiOperation(value = "Delete the invitation with the given id" )
@@ -136,6 +153,13 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 		sp.delete(id);
 	}
 	
+	/**
+	 * Retrieve the message of an invitation (mostly for testing purposes).
+	 * @param id the invitation 
+	 * @return the invitation message 
+	 * @throws NotFoundException
+	 * @throws InternalServerErrorException
+	 */
 	@GET
 	@Path("/{id}/message")
 	public String getMessage(
@@ -144,8 +168,13 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 		return sp.getMessage(id);
 	}
 	
-	// TODO: should be POST, but it is easier to test
-	@GET
+	/**
+	 * Send an invitation message by email.
+	 * @param id the invitation to send
+	 * @throws NotFoundException
+	 * @throws InternalServerErrorException
+	 */
+	@POST
 	@Path("/{id}/send")
 	public void sendMessage(
 			@PathParam("id") String id)
@@ -153,14 +182,35 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 		sp.sendMessage(id);
 	}
 	
-	// TODO: should be POST, but it is easier to test
-	@GET
-	@Path("/{id}/sendall")
+	/**
+	 * Send all messages to all receivers of invitations being in state INITIAL.
+	 * @throws InternalServerErrorException
+	 */
+	@POST
+	@Path("/sendall")
 	public void sendAllMessages()
 		throws InternalServerErrorException {
 		sp.sendAllMessages();
 	}
 	
+	/**
+	 * Migrate the data from EventsService to InvitationService (temporary only).
+	 * @throws InternalServerErrorException
+	 */
+	@POST
+	@Path("/migrate")
+	public void migrate()
+		throws InternalServerErrorException {
+		sp.migrate();
+	}
+	
+	/**
+	 * Register the attendance of an invitation.
+	 * @param id the invitation to register for
+	 * @param comment a comment
+	 * @throws NotFoundException if no such invitation could be found
+	 * @throws ValidationException if the invitation was in a wrong state
+	 */
 	@PUT
 	@Path("/{id}/register")
 	public void register(
@@ -170,6 +220,13 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 		sp.register(id, comment);
 	}
 	
+	/**
+	 * Cancel an existing registration.
+	 * @param id the invitation to deregister
+	 * @param comment a comment
+	 * @throws NotFoundException if no such invitation could be found
+	 * @throws ValidationException if the invitation was in a wrong state
+	 */
 	@PUT
 	@Path("/{id}/deregister")
 	public void deregister(
@@ -177,5 +234,5 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 			String comment)
 		throws NotFoundException, ValidationException {
 		sp.deregister(id, comment);
-	}
+	}	
 }
