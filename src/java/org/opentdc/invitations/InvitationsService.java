@@ -24,13 +24,15 @@
 package org.opentdc.invitations;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 // import io.swagger.annotations.*;
 
 
+
+
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -94,11 +96,13 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	 * Return statistical information about the service
 	 * @return the statistical information in the form of a list of properties
 	 */
+	/*
 	@GET
 	@Path("/statistics")
-	public Properties statistics() {
+	public PropertiesModel statistics() {
 		return sp.statistics();
 	}
+	*/
 
 	@POST
 	@Path("/")
@@ -107,9 +111,10 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	//			{ @ApiResponse(code = 409, message = "An object with the same id exists already (CONFLICT)") },
 	//			{ @ApiResponse(code = 400, message = "Invalid ID supplied or mandatory field missing (BAD_REQUEST)" })
 	public InvitationModel create(
+		@Context HttpServletRequest request,
 		InvitationModel invitation) 
 	throws DuplicateException, ValidationException {
-		return sp.create(invitation);
+		return sp.create(request, invitation);
 	}
 
 	@GET
@@ -130,10 +135,11 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	//			{ @ApiResponse(code = 405, message = "An object with the given id was not found (NOT_FOUND)" },
 	//			{ @ApiResponse(code = 400, message = "Invalid new values given or trying to change immutable fields (BAD_REQUEST)" })
 	public InvitationModel update(
+		@Context HttpServletRequest request,
 		@PathParam("id") String id,
 		InvitationModel invitation
 	) throws NotFoundException, ValidationException {
-		return sp.update(id, invitation);
+		return sp.update(request, id, invitation);
 	}
 
 	/**
@@ -177,9 +183,10 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	@POST
 	@Path("/{id}/send")
 	public void sendMessage(
+			@Context HttpServletRequest request,
 			@PathParam("id") String id)
 		throws NotFoundException, InternalServerErrorException {
-		sp.sendMessage(id);
+		sp.sendMessage(request, id);
 	}
 	
 	/**
@@ -188,21 +195,24 @@ public class InvitationsService extends GenericService<ServiceProvider> {
 	 */
 	@POST
 	@Path("/sendall")
-	public void sendAllMessages()
+	public void sendAllMessages(
+			@Context HttpServletRequest request)
 		throws InternalServerErrorException {
-		sp.sendAllMessages();
+		sp.sendAllMessages(request);
 	}
 	
 	/**
 	 * Migrate the data from EventsService to InvitationService (temporary only).
 	 * @throws InternalServerErrorException
 	 */
+	/*
 	@POST
 	@Path("/migrate")
 	public void migrate()
 		throws InternalServerErrorException {
 		sp.migrate();
 	}
+	*/
 	
 	/**
 	 * Register the attendance of an invitation.
