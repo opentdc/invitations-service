@@ -39,16 +39,12 @@ import org.opentdc.service.exception.ValidationException;
 public interface ServiceProvider {
 	
 	public abstract List<InvitationModel> list(
-		String queryType,
 		String query,
+		String queryType,
 		int position,
 		int size
 	);
 	
-	/*
-	public abstract PropertiesModel statistics();
-	*/
-
 	public abstract InvitationModel create(
 		HttpServletRequest request,
 		InvitationModel invitation) 
@@ -89,10 +85,5 @@ public interface ServiceProvider {
 	public abstract void deregister(
 			String id,
 			String comment)
-	throws NotFoundException, ValidationException;
-	
-	/*
-	public abstract void migrate() 
-	throws InternalServerErrorException;
-	*/
+	throws NotFoundException, ValidationException;	
 }
